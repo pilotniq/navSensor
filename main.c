@@ -374,7 +374,9 @@ int main(void)
     // Start execution 
     // application_timers_start();
     
-    err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+    // Move this function call to erl_bleng 
+    // why is fast/slow specified here, when it is also enabled/disabled in advertising options?
+    err_code = ble_advertising_start(BLE_ADV_MODE_SLOW); // changed from fast to slow
     APP_ERROR_CHECK(err_code);
 #if USE_BSP
     err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);

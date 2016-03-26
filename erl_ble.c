@@ -42,8 +42,15 @@
 
 #define DEVICE_NAME                          "Wireless_LNS"                             /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                    "ErlandLewin"                              /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                     40                                         /**< The advertising interval (in units of 0.625 ms; this value corresponds to 25 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS           180                                        /**< The advertising time-out in units of seconds. */
+
+/* Only slow advertising, 1 per second. Optimize later for power savings? */
+#define APP_ADV_FAST_ENABLED                 false
+#define APP_ADV_FAST_INTERVAL                40                                         /**< The advertising interval (in units of 0.625 ms; 40 corresponds to 25 ms, 1600 to 1s). */
+#define APP_ADV_FAST_TIMEOUT_IN_SECONDS      180                                        /**< The advertising time-out in units of seconds. */
+
+#define APP_ADV_SLOW_ENABLED                 true
+#define APP_ADV_SLOW_INTERVAL                1600 /* 40 */                              /**< The advertising interval (in units of 0.625 ms; 40 corresponds to 25 ms, 1600 to 1s). */
+#define APP_ADV_SLOW_TIMEOUT_IN_SECONDS      0                                          /**< The advertising time-out in units of seconds. */
 
 #define APPL_LOG                             app_trace_log
 
@@ -201,7 +208,8 @@ static void gap_params_init(void)
                                           strlen(DEVICE_NAME));
     APP_ERROR_CHECK(err_code);
 
-    err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_OUTDOOR_SPORTS_ACT_LOC_AND_NAV_DISP);
+    // Changed to Location Pod from location ANd navigation display device
+    err_code = sd_ble_gap_appearance_set( BLE_APPEARANCE_OUTDOOR_SPORTS_ACT_LOC_POD );
     APP_ERROR_CHECK(err_code);
     
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
@@ -564,10 +572,15 @@ static void advertising_init(void)
     advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
+    /* See http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v9.0.0%2Flib_ble_advertising.html&cp=4_1_0_3_1_1 */
     ble_adv_modes_config_t options = {0};
-    options.ble_adv_fast_enabled  = BLE_ADV_FAST_ENABLED;
-    options.ble_adv_fast_interval = APP_ADV_INTERVAL;
-    options.ble_adv_fast_timeout  = APP_ADV_TIMEOUT_IN_SECONDS;
+    options.ble_adv_fast_enabled  = APP_ADV_FAST_ENABLED;
+    options.ble_adv_fast_interval = APP_ADV_FAST_INTERVAL;
+    options.ble_adv_fast_timeout  = APP_ADV_FAST_TIMEOUT_IN_SECONDS;
+
+    options.ble_adv_slow_enabled  = APP_ADV_SLOW_ENABLED;
+    options.ble_adv_slow_interval = APP_ADV_SLOW_INTERVAL;
+    options.ble_adv_slow_timeout  = APP_ADV_SLOW_TIMEOUT_IN_SECONDS;
 
     err_code = ble_advertising_init(&advdata, NULL, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
