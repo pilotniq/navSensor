@@ -40,7 +40,7 @@ SIZE            := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-size'
 remduplicates = $(strip $(if $1,$(firstword $1) $(call remduplicates,$(filter-out $(firstword $1),$1))))
 
 #source common to all targets
-# $(abspath RTT/SEGGER_RTT.c) 
+# $(abspath RTT/SEGGER_RTT.c)
 C_SOURCE_FILES += \
 $(abspath $(SDK_PATH)/components/libraries/button/app_button.c) \
 $(abspath $(SDK_PATH)/components/libraries/util/app_error.c) \
@@ -73,7 +73,7 @@ $(abspath $(SDK_PATH)/components/ble/ble_services/experimental_ble_lns/ble_lns.c
 $(abspath $(SDK_PATH)/components/ble/common/ble_srv_common.c) \
 $(abspath $(SDK_PATH)/components/ble/device_manager/device_manager_peripheral.c) \
 $(abspath $(SDK_PATH)/components/toolchain/system_nrf51.c) \
-$(abspath $(SDK_PATH)/components/softdevice/common/softdevice_handler/softdevice_handler.c) \
+$(abspath $(SDK_PATH)/components/softdevice/common/softdevice_handler/softdevice_handler.c)
 
 #assembly files common to all targets
 #ASM_SOURCE_FILES  = $(abspath $(SDK_PATH)/components/toolchain/gcc/gcc_startup_nrf51.s)
@@ -83,6 +83,7 @@ ASM_SOURCE_FILES  = $(abspath gcc_startup_nrf51.s)
 # INC_PATHS  = -I$(abspath config/experimental_ble_app_lns_s110_pca10028)
 INC_PATHS += -I$(abspath RTT)
 INC_PATHS += -I$(abspath config)
+INC_PATHS += -I$(abspath $(SDK_PATH)/components/toolchain/CMSIS/Include/)
 INC_PATHS += -I$(abspath $(SDK_PATH)/components/drivers_nrf/config)
 INC_PATHS += -I$(abspath $(SDK_PATH)/examples/bsp)
 INC_PATHS += -I$(abspath $(SDK_PATH)/components/libraries/fifo)
@@ -199,6 +200,7 @@ $(BUILD_DIRECTORIES):
 # Create objects from C SRC files
 $(OBJECT_DIRECTORY)/%.o: %.c
 	@echo Compiling file: $(notdir $<)
+	echo INC_PATHS: $(INC_PATHS)
 	$(NO_ECHO)$(CC) $(CFLAGS) $(INC_PATHS) -c -o $@ $<
 
 # Assemble files
